@@ -1,6 +1,58 @@
 """Utilities that interact with BAP."""
 
 
+def check_and_configure_bap_path():
+    """
+    Check if bap_executable_path is set in the config; ask user if necessary.
+
+    Automagically also tries a bunch of strategies to find `bap` if it can,
+    and uses this to populate the default path in the popup, to make the
+    user's life easier. :)
+    """
+    if config.get('bap_executable_path') is not None:
+        return
+    default_bap_path = ''
+
+    from subprocess import check_output, CalledProcessError
+    import os
+    try:
+        default_bap_path = check_output(['which', 'bap']).strip()
+    except (OSError, CalledProcessError) as e:
+        # Cannot run 'which' command  OR
+        # 'which' could not find 'bap'
+        try:
+            default_bap_path = os.path.join(
+                check_output(['opam', 'config', 'var', 'bap:bin']).strip(),
+                'bap'
+            )
+        except OSError:
+            # Cannot run 'opam'
+            pass
+    if not default_bap_path.endswith('bap'):
+        default_bap_path = ''
+    else:
+        print "[!] Unable to locate bap at {}".format(bap_path)
+        return None
+
+    def confirm(msg):
+        return idaapi.askyn_c(ASKBTN_CANCEL, msg) == ASKBTN_YES
+
+    while True:
+        bap_path = idaapi.askstr(0, default_bap_path, 'Path to bap')
+        if bap_path is None:
+            if confirm('Are you sure you don\'t want to set path?'):
+                return
+        if not bap_path.endswith('bap'):
+            if not confirm("Path does not end with bap. Confirm?"):
+                continue
+        if not os.path.isfile(bap_path):
+            if not confirm("Path does not point to a file. Confirm?"):
+                continue
+        break
+
+    config.set('bap_executable_path', bap_path)
+
+
 def run_bap_with(argument_string):
     """
     Run bap with the given argument_string.
@@ -16,8 +68,13 @@ def run_bap_with(argument_string):
     import idc
     import tempfile
 
+    check_and_configure_bap_path()
+    bap_executable_path = config.get('bap_executable_path')
+    if bap_executable_path is None:
+        return  # The user REALLY doesn't want us to run it
+
     args = {
-        'bap_executable_path': config.get('bap_executable_path'),
+        'bap_executable_path': bap_executable_path,
         'bap_output_file': tempfile.mkstemp(suffix='.out',
                                             prefix='ida-bap-')[1],
         'input_file_path': idc.GetInputFilePath(),
