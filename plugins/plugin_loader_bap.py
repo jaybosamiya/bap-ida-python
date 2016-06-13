@@ -17,9 +17,12 @@ class bap_loader(idaapi.plugin_t):
         """Read directory and load as many plugins as possible."""
         import os
         import bap.plugins
+        import bap.utils.run
         import idaapi
 
         idaapi.msg("BAP Loader activated\n")
+
+        bap.utils.run.check_and_configure_bap_path()
 
         plugin_path = os.path.dirname(bap.plugins.__file__)
         idaapi.msg("Loading plugins from {}\n".format(plugin_path))
