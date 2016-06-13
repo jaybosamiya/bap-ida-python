@@ -1,6 +1,7 @@
 """Module for reading from and writing to the bap.cfg config file."""
 
 import os
+import idaapi
 
 cfg_dir = idaapi.idadir('cfg')
 cfg_path = os.path.join(cfg_dir, 'bap.cfg')
@@ -12,8 +13,10 @@ def get(key, default=None, section='default'):
         return default
     with open(cfg_path, 'r') as f:
         current_section = 'default'
-        for line in f.read.split('\n'):
-            if line[0] == ';':  # Comment
+        for line in f.read().split('\n'):
+            if len(line) == 0:  # Empty line
+                continue
+            elif line[0] == ';':  # Comment
                 continue
             elif line[0] == '.':  # Section
                 current_section = line[1:]
@@ -35,7 +38,10 @@ def set(key, value, section='default'):
     new_config = []
     current_section = None
     for line in s.split('\n'):
-        if current_section is None and line[0] not in ('.', ';'):
+        if len(line) == 0:  # Empty line
+            new_config.append(line)
+            continue
+        elif current_section is None and line[0] not in ('.', ';'):
             new_config.append('.default')
             current_section = 'default'
         if line[0] == ';':  # Comment

@@ -9,6 +9,9 @@ def check_and_configure_bap_path():
     and uses this to populate the default path in the popup, to make the
     user's life easier. :)
     """
+    from bap.utils import config
+    import idaapi
+
     if config.get('bap_executable_path') is not None:
         return
     default_bap_path = ''
@@ -30,18 +33,18 @@ def check_and_configure_bap_path():
             pass
     if not default_bap_path.endswith('bap'):
         default_bap_path = ''
-    else:
-        print "[!] Unable to locate bap at {}".format(bap_path)
-        return None
 
     def confirm(msg):
-        return idaapi.askyn_c(ASKBTN_CANCEL, msg) == ASKBTN_YES
+        from idaapi import askyn_c, ASKBTN_CANCEL, ASKBTN_YES
+        return askyn_c(ASKBTN_CANCEL, msg) == ASKBTN_YES
 
     while True:
         bap_path = idaapi.askstr(0, default_bap_path, 'Path to bap')
         if bap_path is None:
             if confirm('Are you sure you don\'t want to set path?'):
                 return
+            else:
+                continue
         if not bap_path.endswith('bap'):
             if not confirm("Path does not end with bap. Confirm?"):
                 continue
