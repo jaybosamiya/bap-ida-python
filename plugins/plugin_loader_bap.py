@@ -14,19 +14,12 @@ class bap_loader(idaapi.plugin_t):
     wanted_hotkey = ""
 
     def init(self):
-        """
-        Read directory and load as many plugins as possible.
-
-        Also updates the BAP config ida_path to point to the current IDA.
-        """
+        """Read directory and load as many plugins as possible."""
         import os
         import bap.plugins
         import idaapi
 
         idaapi.msg("BAP Loader activated\n")
-
-        from bap.utils import bap
-        bap.config.set('ida_path', idaapi.idadir(''))
 
         plugin_path = os.path.dirname(bap.plugins.__file__)
         idaapi.msg("Loading plugins from {}\n".format(plugin_path))
