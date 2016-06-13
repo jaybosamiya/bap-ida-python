@@ -42,7 +42,7 @@ class BAP_BIR_Attr(idaapi.plugin_t):
         address at the location pointed to by the cursor.
         """
         import tempfile
-        from bap.utils.bap import run_bap_with
+        from bap.utils.run import run_bap_with
 
         args = {
             'screen_ea': "0x{:X}".format(idc.ScreenEA()),

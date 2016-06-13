@@ -41,7 +41,7 @@ class BAP_Taint(idaapi.plugin_t):
 
     def _taint_and_color(self, ptr_or_reg):
         import tempfile
-        from bap.utils.bap import run_bap_with
+        from bap.utils.run import run_bap_with
 
         args = {
             'taint_location': idc.ScreenEA(),
