@@ -12,7 +12,7 @@ class config():
     @classmethod
     def get(cls, key, default=None):
         """Get value from key:value in the config file."""
-        from bap_ida_python.utils import bap_comment
+        from bap.utils import bap_comment
         if not os.path.exists(cls._file_path):
             return default
         with open(cls._file_path, 'r') as f:
@@ -21,7 +21,7 @@ class config():
     @classmethod
     def set(cls, key, value):
         """Set key:value in the config file."""
-        from bap_ida_python.utils import bap_comment
+        from bap.utils import bap_comment
         try:
             with open(cls._file_path, 'r') as f:
                 s = f.read()
@@ -43,7 +43,7 @@ def run_bap_with(argument_string):
 
     Also updates the 'BAP View'
     """
-    from bap_ida_python.plugins.bap_view import BAP_View
+    from bap.plugins.bap_view import BAP_View
     import ida
     import idc
     import tempfile

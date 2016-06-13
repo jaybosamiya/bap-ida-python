@@ -5,7 +5,7 @@ import idaapi
 
 
 class bap_loader(idaapi.plugin_t):
-    """Loads plugins from the bap_ida_python/plugins directory."""
+    """Loads plugins from the bap/plugins directory."""
 
     flags = idaapi.PLUGIN_FIX
     comment = "BAP Plugin Loader"
@@ -20,15 +20,15 @@ class bap_loader(idaapi.plugin_t):
         Also updates the BAP config ida_path to point to the current IDA.
         """
         import os
-        import bap_ida_python.plugins
+        import bap.plugins
         import idaapi
 
         idaapi.msg("BAP Loader activated\n")
 
-        from bap_ida_python.utils import bap
+        from bap.utils import bap
         bap.config.set('ida_path', idaapi.idadir(''))
 
-        plugin_path = os.path.dirname(bap_ida_python.plugins.__file__)
+        plugin_path = os.path.dirname(bap.plugins.__file__)
         idaapi.msg("Loading plugins from {}\n".format(plugin_path))
 
         for plugin in sorted(os.listdir(plugin_path)):
