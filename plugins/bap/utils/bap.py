@@ -1,38 +1,5 @@
 """Utilities that interact with BAP."""
 
-import os
-
-
-class config():
-    """Package all configuration related methods together."""
-
-    _dir = os.path.join(os.getenv('HOME'), '.bap')
-    _file_path = os.path.join(_dir, 'config')
-
-    @classmethod
-    def get(cls, key, default=None):
-        """Get value from key:value in the config file."""
-        from bap.utils import bap_comment
-        if not os.path.exists(cls._file_path):
-            return default
-        with open(cls._file_path, 'r') as f:
-            return bap_comment.get_value(f.read(), key, default)
-
-    @classmethod
-    def set(cls, key, value):
-        """Set key:value in the config file."""
-        from bap.utils import bap_comment
-        try:
-            with open(cls._file_path, 'r') as f:
-                s = f.read()
-        except IOError:
-            s = ''
-        s = bap_comment.add_to_comment_string(s, key, value)
-        if not os.path.exists(cls._dir):
-            os.makedirs(cls._dir)
-        with open(cls._file_path, 'w') as f:
-            f.write(s)
-
 
 def run_bap_with(argument_string):
     """
@@ -44,6 +11,7 @@ def run_bap_with(argument_string):
     Also updates the 'BAP View'
     """
     from bap.plugins.bap_view import BAP_View
+    from bap.utils import config
     import ida
     import idc
     import tempfile
